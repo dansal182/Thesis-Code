@@ -1,4 +1,4 @@
-##test for the functions in the script, z is the data to test
+##test for the functions in the script, z are the tested data
 iters = 1000
 H = hypoChain(iters, z, -1, 1, 3, 1)
 summary(H)
