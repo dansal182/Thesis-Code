@@ -1,3 +1,13 @@
+##Process' posterior distibution simularion via proposed metropolis hastings algorithm
+MC = MHRWChain(10000, c(1,2,0), X, 10, c(1,1,1,1), 25)
+summary(MC)
+par(mfrow=c(2,2))
+hist(MC[-(1:5000),1])
+hist(MC[-(1:5000),2])
+hist(MC[-(1:5000),3])
+par(mfrow=c(1,1))
+
+##Likelihood function for the process
 likelihoodRW <- function(param, extr, threshold, np){
   alpha = param[1]
   theta = param[2]
@@ -7,17 +17,16 @@ likelihoodRW <- function(param, extr, threshold, np){
   bx=sum(log((extr-gam)/theta))
   bx[is.nan(bx)] = -Inf
   loglike = m*log(alpha)-(np*((u-gam)/theta)^(-alpha)+(alpha+1)*bx)
-  return(loglike)
-  
+  return(loglike)  
 }
-
+##Parameter Alpha posterior distribution
 postAlphaRW <- function(param, extr, threshold, hyperParam, np){
   a0 = hyperParam[1]
   b0 = hyperParam[2]
   alphaPrior = (a0-1)*log(param[1])-param[1]*b0
   return(likelihoodRW(param,extr, threshold, np)+alphaPrior)
 }
-
+##Parameter Theta posterior distribution
 postThetaRW <- function(param, extr, threshold, hyperParam, np){
   p0 = hyperParam[1]
   q0 = hyperParam[2]
@@ -25,16 +34,16 @@ postThetaRW <- function(param, extr, threshold, hyperParam, np){
   thetaPrior = (p0-1)*log(param[2])-q0*param[2]
   return(likelihood(param, extr, threshold, np)+thetaPrior)
 }
-
+##Parameter Gamma posterior distribution
 postGamRW <- function(param, extr, threshold, np){
   gamPrior = 0
   return(likelihoodRW(param, extr, threshold, np)+gamPrior)
 }
-
+##Alpha proposal simulation
 jumpAlphaRW <- function(ax, bx){
   return(rgamma(1, shape = ax, rate = bx))
 }
-
+##Theta proposal simulation
 jumpThetaRW <- function(theta, hyperParam){
   g = rnorm(1, mean = theta, sd = 1)
   if(2*(hyperParam[1]-hyperParam[2]) < g){
@@ -44,21 +53,21 @@ jumpThetaRW <- function(theta, hyperParam){
   }
   return(g)
 }
-
+##Gamma proposal simulation
 jumpGammaRW <- function(gam, threshold){
   t = rgumbel(1, loc = gam,  scale = 1/2)
   
   return(t)
 }
-
+##Alpha proposal density function
 propsAlphaDensRW <- function(alpha, ax, bx){
   return(log(alpha)*(ax-1)-bx*alpha)
 }
-
+##Gamma proposal density
 densGam <- function(gam, postr){
   return(dgumbel(gam, mu = postr[1], sig = postr[2]))
 }
-
+##Density ratio to compare the alpha proposal and current alpha in the chain
 ratioAlphaRW <- function(param, extr, threshold, props, np, prior, postr){
     r = exp(postAlphaRW(param = c(props, param[2], param[3]), extr, threshold, 
                         hyperParam = prior, np) + 
@@ -71,6 +80,7 @@ ratioAlphaRW <- function(param, extr, threshold, props, np, prior, postr){
   return(min(1,r))
 }
 
+##Density ratio to compare the theta proposal and current theta in the chain
 ratioThetaRW <- function(param, extr, threshold, props, np){
  
   r = exp( likelihoodRW(param = c(param[1], props, param[3]), extr, threshold
@@ -80,7 +90,7 @@ ratioThetaRW <- function(param, extr, threshold, props, np){
   r[is.nan(r)] = 0
   return(min(1,r))
 }
-
+##Density ratio to compare the gamma proposal and current gamma in the chain
 ratioGamRW <- function(param, extr, threshold, props, np, scale){
   r = exp(
     postGamRW(param = c(param[1], param[2], props), extr, threshold, np) + 
@@ -91,7 +101,7 @@ ratioGamRW <- function(param, extr, threshold, props, np, scale){
   r[is.nan(r)]=0
   return(min(1,r))
 }
-
+##Random Walk to generate the parameter simulations and approximate the process' posterior distribution
 MHRWChain <- function(iter, initial, extr, threshold, hyperParam, np){
   chain = array(dim=c(iter+1, 3))
   probabilities = array(dim=c(iter+1,3))
@@ -140,13 +150,7 @@ MHRWChain <- function(iter, initial, extr, threshold, hyperParam, np){
   chain = cbind(chain, probabilities)
   return(chain)
 }
-MC = MHRWChain(10000, c(1,2,0), X, 10, c(1,1,1,1), 25)
-summary(MC)
-par(mfrow=c(2,2))
-hist(MC[-(1:5000),1])
-hist(MC[-(1:5000),2])
-hist(MC[-(1:5000),3])
-par(mfrow=c(1,1))
+
 
 
 
