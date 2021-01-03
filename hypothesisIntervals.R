@@ -1,3 +1,13 @@
+##test for the functions in the script, z is the data to test
+iters = 1000
+H = hypoChain(iters, z, -1, 1, 3, 1)
+summary(H)
+hist(H[-(1:iter/2),1], breaks = 15)
+hist(H[,1], breaks = 15)
+##Acceptance percentage
+1 - mean(duplicated(H[-(1:iters/2),1]))
+
+##Mean life plot function
 meanLifePlot <- function(extr){
   Xm = max(extr)
   u = seq(0,Xm-1)
@@ -9,6 +19,7 @@ meanLifePlot <- function(extr){
   return(plot(x = u, y = mLP, type = "l", ylab ="Mean Life Above u", main ="Mean Life Plot"))
 }
 
+##Bayes estimator for alpha based on the Pareto-Gamma conjugacy for the the tail index alpha
 alphaBY <- function(extr, threshold, a0, b0){
   if(length(extr[extr>=threshold] != 0)){
     BY = (length(extr[extr>=threshold])+a0)/(sum(log(extr[extr>=threshold]/threshold))+b0)
@@ -18,6 +29,7 @@ alphaBY <- function(extr, threshold, a0, b0){
   return(BY)
 }
 
+##Verify the values fall into the area the function is defined  
 supportCheck <- function(maxima, xi){
   if(abs(x1) > 1e-6) {
   b = 1+xi*maxima
@@ -32,6 +44,7 @@ supportCheck <- function(maxima, xi){
   }
 }
 
+##Generalized Extreme Value distribution likelihood function
 likeGEV <- function(maxima, xi){
   if(supportCheck(maxima, xi) < 1) {
     loglike = -Inf
@@ -48,6 +61,7 @@ likeGEV <- function(maxima, xi){
   return(loglike)
 }
 
+##Simulate a sample of frechet extremes
 maxSample <- function(size){
   y = c(1:size)
   for(i in 1:size){
@@ -57,6 +71,7 @@ maxSample <- function(size){
   return(y)
 }
 
+##Gradient log-likelihood function
 gradLogLike <- function(maxima, xi){
   if(supportCheck(maxima, xi) < 1){
     g = -Inf
@@ -74,6 +89,7 @@ gradLogLike <- function(maxima, xi){
   return(g)
 }
 
+##Markov Chain simulation for the posterior distrbution of xi, to carry out the hypothesis test
 hypoChain <- function(iter, maxima, initial, c, L, Msd){
   chain = array(dim=c(iter + 1, 1))
   probs = array(dim=c(iter + 1, 1))
@@ -106,10 +122,5 @@ hypoChain <- function(iter, maxima, initial, c, L, Msd){
   }
   probs[iter+1] = runif(1)
   chain = cbind(chain, probs)
+  return(chain)
 }
-iters = 1000
-H = hypoChain(iters, z, -1, 1, 3, 1)
-summary(H)
-hist(H[-(1:iter/2),1], breaks = 15)
-hist(H[,1], breaks = 15)
-1 - mean(duplicated(H[-(1:iters/2),1]))
