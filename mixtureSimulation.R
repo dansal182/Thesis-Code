@@ -1,3 +1,5 @@
+##Gamma-Pareto tail mixture sample simulation
+
 rmix <- function(n, a0, b0, u0, alpha0){
   p=pgamma(u0, rate = b0, shape = a0)
   w <- c(1:n)
@@ -14,6 +16,7 @@ rmix <- function(n, a0, b0, u0, alpha0){
 W <- rmix(500, 3, 1, 3, 2)
 summary(W)
 
+##Plots to visualize the data
 par(mfrow = c(1,3))
 meanLifePlot(W)
 plot(ecdf(W), col="blue", main = "Empirical Distribution of W", xlab = "w", ylab = "Fn(w)" )
@@ -29,6 +32,7 @@ qqplot(rexp(200, 2), log(W[W>=10]), pch = 19, main = "Log Data QQ-Plot", ylab ="
 qqnorm(W, pch = 19)
 par(mfrow=c(1,1))
 
+##Threshold search for the mixture simulation
 threshs <- c(18, 4, 3, 5, 2, 11)
 K = 6
 probs = rep(1/K, K)
@@ -54,6 +58,7 @@ betsMean
 sum(threshs*betsMean)
 length(W[W>=16])
 
+##Hypothesis tests for the mixture simulation
 Wextr <- W[W >=15]
 alphaBY(W, 15.5, 1,1)
 m = 500
@@ -78,8 +83,10 @@ plot(Hw[-(1:7000),1], type = "l")
 quantile(Hw[-(1:7000),1], probs = seq(0,1, 0.05))
 ##Clearly these data have a Heavy-Tail
 
+##Mixture simulation tail index value
 trueA <- 2
 
+##Posterior distribution approximation 
 MCMCw <- MHRWChain(10000,  c(5,2,0), W[W>=11], 11, c(1,1,1,1), 50) 
 summary(MCMCw)
 
