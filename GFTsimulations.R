@@ -1,8 +1,10 @@
+##95% qunatile computation for the Pareto distribution
 varEtaPar <- function(eta, param, u){
   return((u-param[2])*(1-eta)^(-1/param[1]) + param[2] )
 }
 varEtaPar(0.95, param =c(2, 0), u=10)
 
+##predictive distribution simulation for the 95% quantile
 trimPost = array(dim=c(250, 3))
 varP = c(1:250)
 for(i in 1:250){
@@ -17,9 +19,9 @@ mean(varP)
 
 Xt = rfrechet(500, 2, 0, 1/2)
 Xtv = Xt[Xt>= 100]
-m = length(Xtv)
-m
+length(Xtv)
 
+##Predictive distribution simulation of Frechet samples to compare with the observed sample, and to simulate shocks 
 postSim <- function(n){
   y = c(1:n)
   for(i in 1:n){
@@ -36,17 +38,18 @@ postSim <- function(n){
 }
 postPred = postSim(10000)
 
+##Goodness of Fit test done via a uniform distribution for the simulated samples and observed values
 Test = c(1:m)
 for( i in 1:m){
  Test[i] = length(postPred[postPred <= Xtv[i] ])/length(postPred)
 }
 hist(Test, breaks = 5)
 summary(Test)
-quantile(postPred, probs = seq(0, 1, 0.05))
+quantile(postPred, probs = seq(0, 1, 0.025))
 
 varPost = c(1:5000)
 
-
+##Posterior estimate of the 95% quantile 
 for(i in 1:5000){
   a = MCMCw[(5000+i), 1]
   g = MCMCw[(5000+i), 3]
