@@ -1,16 +1,24 @@
+##Required package to run the function in this script
 require(gtools)
 
-dpareto <- function(x, alpha, threshold){
-  return(alpha/threshold*exp(-(alpha+1)*log(x/threshold)))
-}
-
-
+##Experiment values and results
 K = 5
 probs = rep(1/K, K)
 Y = rpareto(20, 2, 3/2)
 meanLifePlot(Y)
 thresh = c(8,9,10,11,13)
+result = gibbsThresholdSearch(Y, thresh, probs = probs, 1000)
+par(mfrow=c(2,3))
+hist(result[[1]][1,-(1:500)])
+hist(result[[1]][2,-(1:500)])
+hist(result[[1]][3,-(1:500)])
+hist(result[[1]][4,-(1:500)])
+hist(result[[1]][5,-(1:500)])
+par(mfrow=c(1,1))
+betsMean = mean(result[[1]][,-(1:500)])
+sum(thresh*betsMean)
 
+##Gibbs Threshold search proposal done with posterior probabilities for each proposed threshold
 gibbsThresholdSearch <- function(extr, thresholds, probs, iter){
   n = length(extremes)
   latent = rep(0, n)
@@ -48,14 +56,7 @@ gibbsThresholdSearch <- function(extr, thresholds, probs, iter){
   }
   return(list(probsMat, alphasMat))
 }
-
-result = gibbsThresholdSearch(Y, thresh, probs = probs, 1000)
-par(mfrow=c(2,3))
-hist(result[[1]][1,-(1:500)])
-hist(result[[1]][2,-(1:500)])
-hist(result[[1]][3,-(1:500)])
-hist(result[[1]][4,-(1:500)])
-hist(result[[1]][5,-(1:500)])
-par(mfrow=c(1,1))
-betsMean = mean(result[[1]][,-(1:500)])
-sum(thresh*betsMean)
+##Pareto density function
+dpareto <- function(x, alpha, threshold){
+  return(alpha/threshold*exp(-(alpha+1)*log(x/threshold)))
+}
