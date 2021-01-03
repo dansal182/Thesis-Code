@@ -1,6 +1,7 @@
+##Simulate Frechet sample
 X <- rfrechet(500, 2, 0, 1/2)
 summary(X)
-
+##Plots to visualize the data
 par(mfrow = c(1,3))
 meanLifePlot(X)
 plot(ecdf(X), col="blue", main = "Empirical Distribution of X", xlab = "x", ylab = "Fn(x)" )
@@ -22,7 +23,7 @@ qqplot(rexp(200, 2), log(X[X>=150]), pch = 19, main = "Log Data QQ-Plot", ylab =
 qqnorm(X, pch = 19)
 par(mfrow=c(1,1))
 
-
+##Threshold search for the Frechet sample
 threshs <- c(1000, 50, 200, 30, 500, 20)
 K = 6
 probs = rep(1/K, K)
@@ -41,7 +42,7 @@ betsMean = c( mean(threshSearch[[1]][1,-(1:500)]), mean(threshSearch[[1]][2,-(1:
 betsMean
 sum(threshs*betsMean)
 
-
+##Hypothesis tests for the Frechet sample
 Xextr <- X[X >= 100]
 alphaBY(Xextr, 950, 1,1)
 m = 500
@@ -73,10 +74,11 @@ plot(Hx[-(1:7500),1], type = "l")
 quantile(Hx[-(1:7500),1])
 ##Clearly these data have a Heavy-Tail
 
+##True values
 trueA <- 1/2
 trueT <- 200
 trueG <- 0
-
+##Posterior distribution simulation for the Frechet sample
 MCMCx <- MHRWChain(10000,  c(1,4,0), X[X>=100], 100, c(1,1,1,1), 50) 
 summary(MCMCx)
 
@@ -113,7 +115,7 @@ plot(MCMCx[-(1:5000),1], type ="l", ylab = expression(gamma),
      main = expression(paste("Time Series Plot of ", gamma)), xlab = "Iterarions")
 par (mfrow=c(1,1))
 
-
+##Frcehet vs Gumbel likelihood hypothesis test for extremes 
 hypoTest <- function(max, a0, b0){
   alphas = rgamma(1000, a0, b0)
   priorOdds = 100
