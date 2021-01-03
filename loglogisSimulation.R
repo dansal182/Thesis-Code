@@ -1,3 +1,4 @@
+##Log-logistic sample simulation
 rloglogis <- function(n, shape, scale ){
   u = runif(n)
   return(scale*(u/(1-u))^(1/shape))
@@ -6,6 +7,7 @@ rloglogis <- function(n, shape, scale ){
 Z <- rloglogis(200, 7/2, 2)
 summary(Z)
 
+##Plots to visualize the data
 quantile(Z, probs = seq(0,1, 0.05))
 par(mfrow = c(1,3))
 meanLifePlot(Z)
@@ -21,6 +23,8 @@ qqplot(rexp(200, 2), log(Z[Z>=5]), pch = 19, main = "Log Data QQ-Plot", ylab ="l
        xlab = "exponential quantiles")
 qqnorm(Z, pch = 19)
 par(mfrow=c(1,1))
+
+##Log-logistic sample threshold search
 threshs <- c(15, 5, 6, 7, 9, 10)
 K = 6
 probs = rep(1/K, K)
@@ -40,6 +44,7 @@ betsMean
 sum(threshs*betsMean)
 length(Z[Z>=13])
 
+##Hypthesis tests for the Log-logistic sample
 Zextr <- Z[Z >= 6]
 alphaBY(Z, 14, 1,1)
 m = 500
@@ -66,8 +71,11 @@ quantile(Hz[-(1:7500),1])
 
 ##Clearly these data have a Heavy-Tail
 
+##Tail index value used to simulate the data
 trueA <- 7/2
 
+
+##Posterior distribution approximation 
 MCMCz <- MHRWChain(10000,  c(5,2,0), Z[Z>=15], 15, c(1,1,1,1), 30) 
 summary(MCMCz)
 
