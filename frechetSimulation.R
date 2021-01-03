@@ -1,6 +1,7 @@
 ##Simulate Frechet sample
 X <- rfrechet(500, 2, 0, 1/2)
 summary(X)
+
 ##Plots to visualize the data
 par(mfrow = c(1,3))
 meanLifePlot(X)
@@ -78,6 +79,7 @@ quantile(Hx[-(1:7500),1])
 trueA <- 1/2
 trueT <- 200
 trueG <- 0
+
 ##Posterior distribution simulation for the Frechet sample
 MCMCx <- MHRWChain(10000,  c(1,4,0), X[X>=100], 100, c(1,1,1,1), 50) 
 summary(MCMCx)
